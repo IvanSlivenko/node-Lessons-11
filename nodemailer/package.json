@@ -5,7 +5,8 @@
   "main": "insex.js",
   "dependencies": {
     "@elasticemail/elasticemail-client": "^4.0.23",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "nodemailer": "^6.9.4"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

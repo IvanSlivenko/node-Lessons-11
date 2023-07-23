@@ -1,38 +1,41 @@
-const express = require("express");
-const logger = require("morgan");
-const cors = require("cors");
+const ElasticEmail = require('@elasticemail/elasticemail-client');
+require('dotenv').config();
 
-// Локально додаємо до змінних оточень вміст .env
-require("dotenv").config()
+const { ELASTICEMAIL_API_KEY_TWO } = process.env;
 
-const authRouter = require("./routes/api/auth-routes");
-const moviesRouter = require("./routes/api/movies-routes");
-const contactsRouter = require("./routes/api/contacts-routes");
+const defaultClient = ElasticEmail.ApiClient.instance;
 
 
-const app = express();
-
-const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-
-app.use(logger(formatsLogger));
-app.use(cors());
-app.use(express.json());
-app.use(express.static("public"));
-
-app.use("/api/contacts", contactsRouter);
-app.use("/api/auth", authRouter);
-app.use('/api/movies', moviesRouter);
+const { apikey } = defaultClient.authentications;
+apikey.apikey = ELASTICEMAIL_API_KEY_TWO; 
 
 
-app.use((req, res) => {
-  res.status(404).json({ message: "Not found" });
+const api = new ElasticEmail.EmailsApi();
+
+const email = ElasticEmail.EmailMessageData.constructFromObject({
+  Recipients: [new ElasticEmail.EmailRecipient("fikimoc561@nmaller.com")],
+  Content: {
+    Body: [
+      ElasticEmail.BodyPart.constructFromObject({
+        ContentType: "HTML",
+        Content: "<p>Verify email</p>",
+      }),
+    ],
+    Subject: "Verify email",
+    From: "ivan8822@ukr.net",
+  },
 });
 
-app.use((err, req, res, next) => {
-  const { status = 500, message = "Server error" } = err;
-  res.status(status).json({
-    message,
-  });
-});
+const callback = function (error, data, response) {
+  if (error) {
+    console.log("Не вдалося здійснити функцію");
+    console.error(error);
+  } else {
+    console.log("API called successfully.");
+  }
+};
 
-module.exports = app;
+api.emailsPost(email, callback);
+
+
+
