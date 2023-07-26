@@ -3,40 +3,41 @@ const { Schema, model } = require("mongoose");
 const { handleMongooseError } = require("../helpers/index");
 
 const { emailRegexp } = require("../constants/users");
-const { boolean } = require("joi");
+
+// const { Boolean } = require("joi");
 
 
 
-const userSchema = new Schema({
+const userSchema = new Schema(
+  {
     name: {
-        type: String,
-        required:true,
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        match: emailRegexp,
-        unique:true,
-        required: true,
+      type: String,
+      match: emailRegexp,
+      unique: true,
+      required: true,
     },
     password: {
-        type: String,
-        minlength: 6,
-        required:true
+      type: String,
+      minlength: 6,
+      required: true,
     },
     token: {
-        type: String,
-        
+      type: String,
     },
     verify: {
-        type: Boolean,
-        default:false,
+      type: Boolean,
+      default: false,
     },
     verificationCode: {
-        type: String,
-
-    }
-
-}, { versionKey: false, timestamps: true });
+      type: String,
+    },
+  },
+  { versionKey: false, timestamps: true }
+);
 
 userSchema.post("save", handleMongooseError);
 

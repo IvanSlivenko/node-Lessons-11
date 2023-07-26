@@ -43,12 +43,59 @@ const signup = async (req, res) => {
   });
 };
 
+const verify = async (req, res) => {
+
+  const { verificationCode } = req.params;
+  const user = await User.findOne({ verificationCode });
+  if (!user) { 
+    throw HttpError(401)
+  }
+  await User.findByIdAndUpdate(user._id, { verify: true, verificationCode: "" });
+  res.json({
+    message: "Email verify success"
+  })
+
+};
+
+const resendVerify = async(req, res)=> { 
+
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) { 
+    throw HttpError(401)
+  }
+
+   if (user.verify) {
+     throw HttpError(400, "Email alredy verify")
+  }
+  
+  const verifayEmail = {
+    to: email,
+    subject: "Verify email",
+    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${user.verificationCode}"> Click to  Verify email </a>`,
+  };
+
+  await sendEmail(verifayEmail);
+
+  res.json({
+    message: "Verify email send success"
+  })
+
+
+
+}
+
 const signin = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
     throw HttpError(401, "Email node faund");
   }
+  
+  if(!user.verify) { 
+    throw HttpError(401);
+  }
+
 
   const passwordCompare = await bcrypt.compare(password, user.password);
   if (!passwordCompare) {
@@ -100,6 +147,8 @@ const logout = async (req, res) => {
 
 module.exports = {
   signup: ctrlWrapper(signup),
+  verify: ctrlWrapper(verify),
+  resendVerify: ctrlWrapper(resendVerify),
   signin: ctrlWrapper(signin),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
