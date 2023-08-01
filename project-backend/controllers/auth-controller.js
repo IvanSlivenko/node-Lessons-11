@@ -62,7 +62,7 @@ const resendVerify = async(req, res)=> {
   const { email } = req.body;
   const user = await User.findOne({ email });
   if (!user) { 
-    throw HttpError(401)
+    throw HttpError(401);
   }
 
    if (user.verify) {

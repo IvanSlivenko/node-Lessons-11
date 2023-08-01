@@ -38,7 +38,17 @@ yarn
 
 
 https://youtu.be/4olABZwhb68
-01:20:18
+01:36:47
+
+
+https://youtu.be/vXq9gz1Szls
+00:11:36
+
+https://coreui.io/product/free-react-admin-template/
+
+yarn
+
+//  встановлюємо всі npm пакети
 
 
 
